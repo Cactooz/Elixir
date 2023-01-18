@@ -1,10 +1,19 @@
 defmodule Derivative do
   @type literal() :: {:num, number()} | {:var, atom()}
 
-  @type expr() :: literal() | {:add, expr(), expr()} | {:mul, expr(), expr()}
+  @type expr() :: literal() |
+  {:add, expr(), expr()} |
+  {:mul, expr(), expr()} |
+  {:exp, expr(), {:num, literal()}}
 
   def test() do
     e = {:add, {:mul, {:num, 2}, {:var, :x}}, {:num, 4}}
+    d = derive(e, :x)
+    IO.write("Derivative: #{print(d)} for expression #{print(e)}")
+  end
+
+  def exp() do
+    e = {:exp, {:var, :x}, {:num, 2}}
     d = derive(e, :x)
     IO.write("Derivative: #{print(d)} for expression #{print(e)}")
   end
@@ -23,8 +32,13 @@ defmodule Derivative do
     {:add, {:mul, derive(e1, v), e2}, {:mul, e1, derive(e2, v)}}
   end
 
+  def derive({:exp, base, {:num, exp}}, v) do
+    {:mul, {:mul, {:num, exp}, {:exp, base, {:num, exp - 1}}}, derive(base, v)}
+  end
+
   def print({:num, n}) do "#{n}" end
   def print({:var, v}) do "#{v}" end
   def print({:add, e1, e2}) do "(#{print(e1)} + #{print(e2)})" end
   def print({:mul, e1, e2}) do "#{print(e1)} * #{print(e2)}" end
+  def print({:exp, base, exp}) do "(#{print(base)}) ^ (#{print(exp)})" end
 end
