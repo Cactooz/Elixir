@@ -5,7 +5,8 @@ defmodule Derivative do
 
   def test() do
     e = {:add, {:mul, {:num, 2}, {:var, :x}}, {:num, 4}}
-    derive(e, :x)
+    d = derive(e, :x)
+    IO.write("Derivative: #{print(d)} for expression #{print(e)}")
   end
 
   def derive({:num, _}, _) do {:num, 0} end
@@ -21,4 +22,9 @@ defmodule Derivative do
   def derive({:mul, e1, e2}, v) do
     {:add, {:mul, derive(e1, v), e2}, {:mul, e1, derive(e2, v)}}
   end
+
+  def print({:num, n}) do "#{n}" end
+  def print({:var, v}) do "#{v}" end
+  def print({:add, e1, e2}) do "(#{print(e1)} + #{print(e2)})" end
+  def print({:mul, e1, e2}) do "#{print(e1)} * #{print(e2)}" end
 end
