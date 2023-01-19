@@ -94,6 +94,87 @@ defmodule Derivative do
     {:sub, {:num, 1}, {:mul, {:sin, e}, derive(e, v)}}
   end
 
+  def simplify({:add, e1, e2}) do
+    simplify_add(simplify(e1), simplify(e2))
+  end
+
+  def simplify({:sub, e1, e2}) do
+    simplify_sub(simplify(e1), simplify(e2))
+  end
+
+  def simplify({:mul, e1, e2}) do
+    simplify_mul(simplify(e1), simplify(e2))
+  end
+
+  def simplify({:div, e1, e2}) do
+    simplify_div(simplify(e1), simplify(e2))
+  end
+
+  def simplify({:exp, e1, e2}) do
+    simplify_exp(simplify(e1), simplify(e2))
+  end
+
+  def simplify({:ln, e}) do
+    simplify_ln(simplify(e))
+  end
+
+  def simplify({:sqrt, e}) do
+    simplify_sqrt(simplify(e))
+  end
+
+  def simplify(e) do e end
+
+  def simplify_add({:num, 0}, e) do e end
+  def simplify_add(e, {:num, 0}) do e end
+  def simplify_add({:num, n1}, {:num, n2}) do
+    {:num, n1+n2}
+  end
+  def simplify_add(e1, e2) do
+    {:add, e1, e2}
+  end
+
+  def simplify_sub({:num, 0}, e) do e end
+  def simplify_sub(e, {:num, 0}) do e end
+  def simplify_sub({:num, n1}, {:num, n2}) do
+    {:num, n1-n2}
+  end
+  def simplify_sub(e1, e2) do
+    {:sub, e1, e2}
+  end
+
+  def simplify_mul({:num, 0}, _) do {:num, 0} end
+  def simplify_mul(_, {:num, 0}) do {:num, 0} end
+  def simplify_mul({:num, 1}, e) do e end
+  def simplify_mul(e, {:num, 1}) do e end
+  def simplify_mul({:num, n1}, {:num, n2}) do
+    {:num, n1*n2}
+  end
+  def simplify_mul(e, e) do
+    {:exp, e, {:num, 2}}
+  end
+  def simplify_mul(e1, e2) do
+    {:mul, e1, e2}
+  end
+
+  def simplify_div(e, {:num, 1}) do e end
+  def simplify_div(e1, e2) do
+    {:div, e1, e2}
+  end
+
+  def simplify_exp(_, {:num, 0}) do {:num, 1} end
+  def simplify_exp({:num, 0}, _) do {:num, 0} end
+  def simplify_exp(e, {:num, 1}) do e end
+  def simplify_exp({:num, 1}, _) do {:num, 1} end
+  def simplify_exp(e1, e2) do
+    {:exp, e1, e2}
+  end
+
+  def simplify_ln({:num, 1}) do {:num, 0} end
+  def simplify_ln(e) do e end
+
+  def simplify_sqrt({:exp, e, {:num, 2}}) do e end
+  def simplify_sqrt(e) do e end
+
   def print({:num, n}) do "#{n}" end
   def print({:var, v}) do "#{v}" end
   def print({:add, e1, e2}) do "(#{print(e1)} + #{print(e2)})" end
