@@ -8,7 +8,9 @@ defmodule Derivative do
   {:div, expr(), expr()} |
   {:exp, expr(), {:num, literal()}} |
   {:ln, expr()} |
-  {:sqrt, expr()}
+  {:sqrt, expr()} |
+  {:sin, expr()} |
+  {:cos, expr()}
 
   def test() do
     e = {:add, {:mul, {:num, 2}, {:var, :x}}, {:num, 4}}
@@ -36,6 +38,12 @@ defmodule Derivative do
 
   def sqrt() do
     e = {:sqrt, {:var, :x}}
+    d = derive(e, :x)
+    IO.write("Derivative: #{print(d)} for expression #{print(e)}")
+  end
+
+  def sin() do
+    e = {:add, {:sin, {:var, :x}}, {:cos, {:var, :x}}}
     d = derive(e, :x)
     IO.write("Derivative: #{print(d)} for expression #{print(e)}")
   end
@@ -78,6 +86,14 @@ defmodule Derivative do
     {:div, derive(e, v), {:mul, {:num, 2}, {:sqrt, e}}}
   end
 
+  def derive({:sin, e}, v) do
+    {:mul, {:cos, e}, derive(e, v)}
+  end
+
+  def derive({:cos, e}, v) do
+    {:sub, {:num, 1}, {:mul, {:sin, e}, derive(e, v)}}
+  end
+
   def print({:num, n}) do "#{n}" end
   def print({:var, v}) do "#{v}" end
   def print({:add, e1, e2}) do "(#{print(e1)} + #{print(e2)})" end
@@ -87,4 +103,6 @@ defmodule Derivative do
   def print({:exp, base, exp}) do "(#{print(base)}) ^ (#{print(exp)})" end
   def print({:ln, e}) do "ln(#{print(e)})" end
   def print({:sqrt, e}) do "sqrt(#{print(e)})" end
+  def print({:sin, e}) do "sin(#{print(e)})" end
+  def print({:cos, e}) do "cos(#{print(e)})" end
 end
