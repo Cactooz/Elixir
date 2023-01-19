@@ -15,37 +15,55 @@ defmodule Derivative do
   def test() do
     e = {:add, {:mul, {:num, 2}, {:var, :x}}, {:num, 4}}
     d = derive(e, :x)
-    IO.write("Derivative: #{print(d)} for expression #{print(e)}")
+    s = simplify(d)
+    IO.write("Expression: #{print(e)}\n")
+    IO.write("Derivative: #{print(d)}\n")
+    IO.write("Simplification: #{print(s)}\n")
   end
 
   def exp() do
     e = {:exp, {:var, :x}, {:num, 2}}
     d = derive(e, :x)
-    IO.write("Derivative: #{print(d)} for expression #{print(e)}")
+    s = simplify(d)
+    IO.write("Expression: #{print(e)}\n")
+    IO.write("Derivative: #{print(d)}\n")
+    IO.write("Simplification: #{print(s)}\n")
   end
 
   def ln() do
     e = {:ln, {:var, :x}}
     d = derive(e, :x)
-    IO.write("Derivative: #{print(d)} for expression #{print(e)}")
+    s = simplify(d)
+    IO.write("Expression: #{print(e)}\n")
+    IO.write("Derivative: #{print(d)}\n")
+    IO.write("Simplification: #{print(s)}\n")
   end
 
   def div() do
     e = {:div, {:add, {:num, 1}, {:var, :x}}, {:sub, {:var, :x}, {:num, 2}}}
     d = derive(e, :x)
-    IO.write("Derivative: #{print(d)} for expression #{print(e)}")
+    s = simplify(d)
+    IO.write("Expression: #{print(e)}\n")
+    IO.write("Derivative: #{print(d)}\n")
+    IO.write("Simplification: #{print(s)}\n")
   end
 
   def sqrt() do
-    e = {:sqrt, {:var, :x}}
+    e = {:sqrt, {:exp, {:var, :x}, {:num, 2}}}
     d = derive(e, :x)
-    IO.write("Derivative: #{print(d)} for expression #{print(e)}")
+    s = simplify(d)
+    IO.write("Expression: #{print(e)}\n")
+    IO.write("Derivative: #{print(d)}\n")
+    IO.write("Simplification: #{print(s)}\n")
   end
 
   def sin() do
     e = {:add, {:sin, {:var, :x}}, {:cos, {:var, :x}}}
     d = derive(e, :x)
-    IO.write("Derivative: #{print(d)} for expression #{print(e)}")
+    s = simplify(d)
+    IO.write("Expression: #{print(e)}\n")
+    IO.write("Derivative: #{print(d)}\n")
+    IO.write("Simplification: #{print(s)}\n")
   end
 
   def derive({:num, _}, _) do {:num, 0} end
