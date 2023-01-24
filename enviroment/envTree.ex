@@ -35,7 +35,7 @@ defmodule EnvTree do
   def remove({:node, key, value, left, right}, removeKey) when removeKey < key do
     {:node, key, value, remove(left, removeKey), right}
   end
-  def remove([:node, key, value, left, right], removeKey) do
+  def remove({:node, key, value, left, right}, removeKey) do
     {:node, key, value, left, remove(right, removeKey)}
   end
 
