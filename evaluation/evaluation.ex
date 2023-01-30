@@ -39,4 +39,8 @@ defmodule Evaluation do
   def reduce(e1, e2) do
     {:q, trunc(e1/gcd(e1,e2)), trunc(e2/gcd(e1,e2))}
   end
+
+  def print({:num, n}) do "#{n}" end
+  def print({:q, top, div}) do "#{print(top)}/#{print(div)}" end
+  def print(n) do "#{n}" end
 end
