@@ -1,4 +1,6 @@
 defmodule Eager do
+  def eval(seq) do eval_seq(seq, []) end
+
   def eval_expr({:atm, id}, _) do {:ok, id} end
 
   def eval_expr({:var, id}, env) do
@@ -38,5 +40,27 @@ defmodule Eager do
   end
 
   def eval_match(_, _, _) do :fail end
+
+  def eval_scope(pattern, env) do
+    Env.remove(extract_vars(pattern), env)
+  end
+
+  def extract_vars(pattern) do extract_vars(pattern, []) end
+  def extract_vars({:var, var}, vars) do [var|vars] end
+  def extract_vars(_, vars) do vars end
+
+  def eval_seq([exp], env) do eval_expr(exp, env) end
+
+  def eval_seq([{:match, pattern, exp}|tail], env) do
+    case eval_expr(exp, env) do
+      :error -> :error
+      {:ok, str} ->
+        env = eval_scope(pattern, env)
+        case eval_match(pattern, str, env) do
+          :fail -> :error
+          {:ok, env} -> eval_seq(tail, env)
+        end
+    end
+  end
 
 end
