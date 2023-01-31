@@ -1,4 +1,13 @@
 defmodule Evaluation do
+  @type literal() :: {:num, number()} | {:var, atom()}
+
+  @type expr() :: literal() |
+  {:add, expr(), expr()} |
+  {:sub, expr(), expr()} |
+  {:mul, expr(), expr()} |
+  {:div, expr(), expr()} |
+  {:q, {:num, literal()}, {:num, literal()}}
+
   def eval(_, {:num, num}) do {:num, num} end
   def eval(env, {:var, var}) do
     {_, x} = EnvTree.lookup(env, var)
