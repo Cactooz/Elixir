@@ -25,23 +25,21 @@ defmodule Env do
     lookup(lookupId, right)
   end
 
-  def removeOne(_, nil) do nil end
-  def removeOne(id, {:node, id, _, left, nil}) do left end
-  def removeOne(id, {:node, id, _, nil, right}) do right end
-  def removeOne(id, {:node, id, _, left, right}) do
+  def remove(_, nil) do nil end
+  def remove([], env) do env end
+  def remove([id|tail], env) do remove(id, remove(tail, env)) end
+  def remove(id, {:node, id, _, left, nil}) do left end
+  def remove(id, {:node, id, _, nil, right}) do right end
+  def remove(id, {:node, id, _, left, right}) do
     {id, struct, newRight} = leftmost(right)
     {:node, id, struct, left, newRight}
   end
-  def removeOne(removeId, {:node, id, struct, left, right}) when removeId < id do
-    {:node, id, struct, removeOne(removeId, left), right}
+  def remove(removeId, {:node, id, struct, left, right}) when removeId < id do
+    {:node, id, struct, remove(removeId, left), right}
   end
-  def removeOne(removeId, {:node, id, struct, left, right}) do
-    {:node, id, struct, left, removeOne(removeId, right)}
+  def remove(removeId, {:node, id, struct, left, right}) do
+    {:node, id, struct, left, remove(removeId, right)}
   end
-
-  def remove(_, nil) do nil end
-  def remove([], env) do env end
-  def remove([id|tail], env) do removeOne(id, remove(tail,env)) end
 
   def leftmost({:node, id, struct, nil, right}) do
     {id, struct, right}
