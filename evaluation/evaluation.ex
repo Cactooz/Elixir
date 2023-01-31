@@ -38,7 +38,7 @@ defmodule Evaluation do
     if rem(n1, n2) == 0 do
       {:num, trunc(n1/n2)}
     else
-      {:q, n1, n2}
+      reduce(n1, n2)
     end
   end
 
