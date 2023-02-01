@@ -14,4 +14,12 @@ defmodule Env do
   def remove([id|tail], env) do remove(id, remove(tail, env)) end
   def remove(id, [{id, _}|tail]) do tail end
   def remove(id, [head|tail]) do [head|remove(id, tail)] end
+
+  def closure([], env) do env end
+  def closure([var|vars], env) do
+    case lookup(var, env) do
+      nil -> :error
+      {_, _} -> closure(vars, env)
+    end
+  end
 end
