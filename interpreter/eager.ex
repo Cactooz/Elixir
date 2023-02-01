@@ -47,6 +47,11 @@ defmodule Eager do
     end
   end
 
+  def eval_expr({:fun, id}, _) do
+    {par, seq} = apply(Prgm, id, [])
+    {:ok, {:closure, par, seq, Env.new()}}
+  end
+
   def eval_match(:ignore, _, env) do {:ok, env} end
 
   def eval_match({:atm, id}, id, env) do {:ok, env} end
