@@ -22,4 +22,11 @@ defmodule Env do
       {_, _} -> closure(vars, env)
     end
   end
+
+  def args([], _, env) do env end
+  def args([par|pars], [str|strs], env) do
+    env = add(par, str, env)
+    args(pars, strs, env)
+  end
+
 end
