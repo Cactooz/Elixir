@@ -24,9 +24,9 @@ defmodule Env do
   end
 
   def args([], _, env) do env end
-  def args([par|pars], [str|strs], env) do
-    env = add(par, str, env)
-    args(pars, strs, env)
+  def args([parameter|parameters], [struct|structs], env) do
+    env = add(parameter, struct, env)
+    args(parameters, structs, env)
   end
 
 end
