@@ -11,4 +11,7 @@ defmodule Hanoi do
   def count([_|list], amount) do
     count(list, amount+1)
   end
+  def count(n, from, aux, to) do
+    count(hanoi(n, from, aux, to), 0)
+  end
 end
