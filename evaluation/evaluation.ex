@@ -34,6 +34,8 @@ defmodule Evaluation do
   def mul({:q, n1, d}, {:num, n2}) do {:q, n1*n2, d} end
   def mul({:num, n1}, {:num, n2}) do {:num, n1*n2} end
 
+  def d(_, {:num, 0}) do {:error, "Division with 0"} end
+  def d({:num, n}, {:q, q1, q2}) do reduce(n*q2, q1) end
   def d({:num, n1}, {:num, n2}) do
     if rem(n1, n2) == 0 do
       {:num, trunc(n1/n2)}
@@ -45,6 +47,7 @@ defmodule Evaluation do
   def gcd(n, 0) do n end
   def gcd(n1, n2) do gcd(n2, rem(n1, n2)) end
 
+  def reduce(n, 1) do {:num, n} end
   def reduce(e1, e2) do
     {:q, trunc(e1/gcd(e1,e2)), trunc(e2/gcd(e1,e2))}
   end
