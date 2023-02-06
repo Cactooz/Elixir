@@ -5,4 +5,9 @@ defmodule Hanoi do
     [{:move, from, to}] ++
     hanoi(n-1, aux, from, to)
   end
+
+  def count([], amount) do amount end
+  def count([_|list], amount) do
+    count(list, amount+1)
+  end
 end
