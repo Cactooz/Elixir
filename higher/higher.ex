@@ -37,4 +37,13 @@ defmodule Higher do
   def fold_left([head|tail], acc, f) do
     fold_left(tail, f.(head, acc), f)
   end
+
+  def filter([], _) do [] end
+  def filter([head|tail], f) do
+    if(f.(head)) do
+      [head|filter(tail, f)]
+    else
+      filter(tail, f)
+    end
+  end
 end
