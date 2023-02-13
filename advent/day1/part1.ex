@@ -3,7 +3,7 @@ defmodule Advent do
     {:ok, data} = File.read(path)
     calories = String.split(data, "\r\n\r\n")
     calories = sumListLists(calories)
-    findBiggest(calories)
+    Enum.sum(findBiggest(calories, 3))
   end
 
   def sumList([]) do 0 end
@@ -17,8 +17,8 @@ defmodule Advent do
     [sumList(list)|sumListLists(tail)]
   end
 
-  def findBiggest(list) do
-    list = Enum.sort(list)
-    List.last(list)
+  def findBiggest(list, n) do
+    list = Enum.sort(list, :desc)
+    Enum.take(list, n)
   end
 end
