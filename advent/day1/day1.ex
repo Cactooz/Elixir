@@ -2,8 +2,7 @@ defmodule Day1 do
   def getInput(path) do
     {:ok, data} = File.read(path)
     calories = String.split(data, "\r\n\r\n")
-    calories = sumListLists(calories)
-    Enum.sum(findBiggest(calories, 3))
+    sumListLists(calories)
   end
 
   def sumList([]) do 0 end
@@ -17,8 +16,9 @@ defmodule Day1 do
     [sumList(list)|sumListLists(tail)]
   end
 
-  def findBiggest(list, n) do
+  def findBiggest(path, n) do
+    list = getInput(path)
     list = Enum.sort(list, :desc)
-    Enum.take(list, n)
+    Enum.sum(Enum.take(list, n))
   end
 end
