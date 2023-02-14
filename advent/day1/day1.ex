@@ -1,4 +1,4 @@
-defmodule Advent do
+defmodule Day1 do
   def getInput(path) do
     {:ok, data} = File.read(path)
     calories = String.split(data, "\r\n\r\n")
