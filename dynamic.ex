@@ -1,10 +1,25 @@
 defmodule Dynamic do
-  def search([]) do 0 end
-  def search([_]) do 0 end
-  def search(seq) do
-    Enum.reduce(split(seq), :big, fn({left, right, length}, acc) ->
-      cost = search(left) + search(right) + length
-      min(acc, cost)
+
+  def search(seq) do elem(search(seq, Map.new()), 0) end
+
+  def check(seq, mem) do
+    case Map.get(mem, seq) do
+      nil ->
+        {cost, mem} = search(seq, mem)
+        {cost, Map.put(mem, seq, cost)}
+      cost ->
+        {cost, mem}
+    end
+  end
+
+  def search([], mem) do {0, mem} end
+  def search([_], mem) do {0, mem} end
+  def search(seq, mem) do
+    Enum.reduce(split(seq), {:big, mem}, fn({left, right, length}, {acc, mem}) ->
+      {costLeft, mem} = check(left, mem)
+      {costRight, mem} = check(right, mem)
+      cost = costLeft + costRight + length
+      {min(acc, cost), mem}
     end)
   end
 
