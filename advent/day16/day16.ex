@@ -43,30 +43,53 @@ defmodule Day16 do
      "Valve DD has flow rate=35; tunnels lead to valves BB"]
   end
 
-  def valveCheck(_, _, _, 0, sum) do sum end
-  def valveCheck(_, _, [], _, sum) do sum end
-  def valveCheck(map, turnedOn, [pipe|pipes], timeLeft, sum) do
-    head = valveCheck(map, turnedOn, pipe, timeLeft-1, sum)
-    tail = valveCheck(map, turnedOn, pipes, timeLeft, sum)
-    case head > tail do
-      true -> head
-      false -> tail
+  def memoryCheck(valve, flow, open, closed, timeLeft, map, memory) do
+    case Map.get(memory, {valve, open, closed, timeLeft}) do
+      nil ->
+        {flow, memory} = valveCheck(valve, flow, open, closed, timeLeft, map, memory)
+        {flow, Map.put(memory, {valve, open, closed, timeLeft}, flow)}
+      flow ->
+        {flow, memory}
     end
   end
 
-  def valveCheck(map, turnedOn, valve, timeLeft, sum) do
-    case Map.fetch(turnedOn, valve) do
+  #If there are no more valves to check in the list
+  def valveCheck([], flow, _open, _closed, _timeLeft, _map, memory) do
+    {flow, memory}
+  end
+  #If all the valves are open
+  def valveCheck(_valve, flow, _open, [], _timeLeft, _map, memory) do
+    {flow, memory}
+  end
+  #If the time is out
+  def valveCheck(_valve, flow, _open, _closed, 0, _map, memory) do
+    {flow, memory}
+  end
+  #Check the connecting paths to other valves which has the best flow
+  def valveCheck([valve|valves], flow, open, closed, timeLeft, map, memory) do
+    #Go to the first connecting pipe
+    {firstFlow, memory} = memoryCheck(valve, flow, open, closed, timeLeft-1, map, memory)
+    #Go to the other connecting pipes
+    {restFlow, memory} = valveCheck(valves, flow, open, closed, timeLeft, map, memory)
+    #Get the path with the best flow
+    {max(firstFlow, restFlow), memory}
+  end
+  #Check a single valve
+  def valveCheck(valve, flow, open, closed, timeLeft, map, memory) do
+    case Map.fetch(open, valve) do
+      #If the valve is already opened
       {:ok, _} ->
         {:ok, {_, connections}} = Map.fetch(map, valve)
-        valveCheck(map, turnedOn, connections, timeLeft, sum)
+        #Check all connecting valves
+        valveCheck(connections, flow, open, closed, timeLeft, map, memory)
       :error ->
-        {:ok, {flow, connections}} = Map.fetch(map, valve)
-        skip = valveCheck(map, turnedOn, connections, timeLeft, sum)
-        turnOn = valveCheck(map, Map.put(turnedOn, valve, 0), connections, timeLeft-1, sum+(flow*(timeLeft-1)))
-        case turnOn > skip do
-          true -> turnOn
-          false -> skip
-        end
-      end
+        {:ok, {valveFlow, connections}} = Map.fetch(map, valve)
+        #Skip the current valve and check the connecting valves
+        skip = valveCheck(connections, flow, open, closed, timeLeft, map, memory)
+        #Turn on the current valve
+        turnOn = memoryCheck(valve, flow+valveFlow*(timeLeft-1), Map.put(open, valve, 0), Map.delete(closed, valve), timeLeft-1, map, memory)
+        #Check which of the two was the best
+        max(skip, turnOn)
+    end
   end
 end
