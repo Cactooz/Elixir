@@ -37,59 +37,65 @@ defmodule Day16 do
   end
 
   def simple() do
-    ["Valve AA has flow rate=0; tunnels lead to valves BB, CC",
+    ["Valve AA has flow rate=0; tunnels lead to valves BB, CC, EE, FF",
      "Valve BB has flow rate=30; tunnels lead to valves AA, CC, DD",
-     "Valve CC has flow rate=25; tunnels lead to valves AA, BB",
-     "Valve DD has flow rate=35; tunnels lead to valves BB"]
+     "Valve CC has flow rate=25; tunnels lead to valves AA, BB, EE",
+     "Valve DD has flow rate=35; tunnels lead to valves BB",
+     "Valve EE has flow rate=10; tunnels lead to valves AA, CC, FF",
+     "Valve FF has flow rate=50; tunnels lead to valves AA, EE"]
   end
 
+  def addValves([]) do [] end
+  def addValves([valve|valves]) do
+    {valve, {flow, _}} = valve
+    if(flow > 0) do
+      [valve|addValves(valves)]
+    else
+      addValves(valves)
+    end
+  end
+
+  def memoryCheck(valve, flow, open, [], timeLeft, _map, memory) do
+    total = flow * timeLeft
+    {total, Map.put(memory, {valve, open, timeLeft}, total)}
+  end
   def memoryCheck(valve, flow, open, closed, timeLeft, map, memory) do
-    case Map.get(memory, {valve, open, closed, timeLeft}) do
+    case Map.get(memory, {valve, open, timeLeft}) do
       nil ->
-        {flow, memory} = valveCheck(valve, flow, open, closed, timeLeft, map, memory)
-        {flow, Map.put(memory, {valve, open, closed, timeLeft}, flow)}
-      flow ->
-        {flow, memory}
+        #Does not exist in the memory, search for it
+        {maxFlow, memory} = valveCheck(valve, flow, open, closed, timeLeft, map, memory)
+        {maxFlow, Map.put(memory, {valve, open, timeLeft}, maxFlow)}
+      maxFlow ->
+        #Return the calcuated memory
+        {maxFlow, memory}
     end
   end
 
-  #If there are no more valves to check in the list
-  def valveCheck([], flow, _open, _closed, _timeLeft, _map, memory) do
-    {flow, memory}
-  end
-  #If all the valves are open
-  def valveCheck(_valve, flow, _open, [], _timeLeft, _map, memory) do
-    {flow, memory}
-  end
   #If the time is out
-  def valveCheck(_valve, flow, _open, _closed, 0, _map, memory) do
-    {flow, memory}
+  def valveCheck(_valve, _flow, _open, _closed, 0, _map, memory) do
+    {0, memory}
   end
-  #Check the connecting paths to other valves which has the best flow
-  def valveCheck([valve|valves], flow, open, closed, timeLeft, map, memory) do
-    #Go to the first connecting pipe
-    {firstFlow, memory} = memoryCheck(valve, flow, open, closed, timeLeft-1, map, memory)
-    #Go to the other connecting pipes
-    {restFlow, memory} = valveCheck(valves, flow, open, closed, timeLeft, map, memory)
-    #Get the path with the best flow
-    {max(firstFlow, restFlow), memory}
-  end
-  #Check a single valve
-  def valveCheck(valve, flow, open, closed, timeLeft, map, memory) do
-    case Map.fetch(open, valve) do
-      #If the valve is already opened
-      {:ok, _} ->
-        {:ok, {_, connections}} = Map.fetch(map, valve)
-        #Check all connecting valves
-        valveCheck(connections, flow, open, closed, timeLeft, map, memory)
-      :error ->
-        {:ok, {valveFlow, connections}} = Map.fetch(map, valve)
-        #Skip the current valve and check the connecting valves
-        skip = valveCheck(connections, flow, open, closed, timeLeft, map, memory)
-        #Turn on the current valve
-        turnOn = memoryCheck(valve, flow+valveFlow*(timeLeft-1), Map.put(open, valve, 0), Map.delete(closed, valve), timeLeft-1, map, memory)
-        #Check which of the two was the best
-        max(skip, turnOn)
+  def valveCheck(valve, totalFlow, open, closed, timeLeft, map, memory) do
+    {:ok, {flow, connections}} = Map.fetch(map, valve)
+
+    {valveFlow, memory} = case Enum.member?(closed, valve) do
+      true ->
+        #Open the valve
+        newClosed = List.delete(closed, valve)
+        {openFlow, memory} = memoryCheck(valve, totalFlow+flow, [valve|open], newClosed, timeLeft-1, map, memory)
+        {openFlow + totalFlow, memory}
+      false ->
+        {totalFlow*timeLeft, memory}
     end
+
+    #Check if the connections are better
+    Enum.reduce(connections, {valveFlow, memory}, fn(connectingValve, {valveFlow, memory}) ->
+      {connectionFlow, memory} = memoryCheck(connectingValve, totalFlow, open, closed, timeLeft-1, map, memory)
+      connectionFlow = connectionFlow + totalFlow
+      case valveFlow > connectionFlow do
+        true -> {valveFlow, memory}
+        false -> {connectionFlow, memory}
+      end
+    end)
   end
 end
