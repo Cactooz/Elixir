@@ -1,16 +1,17 @@
 defmodule Day16 do
-  def task() do
+  def task(time) do
     start = :AA
-    #rows = File.stream!("day16.csv")
+    rows = File.stream!("advent/day16/input.txt")
     #rows = sample()
-    rows = simple()
-    parse(rows)
+    map = parse(rows)
+    closed = addValves(map)
+    elem(valveCheck(start, 0, [], closed, time, Map.new(map), Map.new()), 0)
   end
 
   ## turning rows
   ##  "Valve DD has flow rate=20; tunnels lead to valves CC, AA, EE"
   ## into tuples
-  ##  {:DD, {20, [:CC, :AA, :EE]}
+  ##  {:DD, {20, [:CC, :AA, :EE]}}
   def parse(input) do
     Enum.map(input, fn(row) ->
       [valve, rate, valves] = String.split(String.trim(row), ["=", ";"])
