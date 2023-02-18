@@ -1,7 +1,7 @@
 defmodule Day15 do
   def part1() do
-    sensors = Enum.map(sample(), fn(row) -> parse(row) end)
-    y = 10
+    sensors = Stream.map(input(), fn(row) -> parse(row) end)
+    y = 2000000
     row = Row.new()
     row = Enum.reduce(sensors, row, fn({:sensor, sensor, beacon}, row) ->
       block(sensor, beacon, y, row)
@@ -28,6 +28,10 @@ defmodule Day15 do
     else
       row
     end
+  end
+
+  def input() do
+    File.stream!("advent/day15/input.txt")
   end
 
   def sample() do
