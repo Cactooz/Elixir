@@ -1,7 +1,6 @@
 defmodule Day15 do
-  def part1() do
+  def part1(y) do
     sensors = Stream.map(input(), fn(row) -> parse(row) end)
-    y = 2000000
     row = Row.new()
     row = Enum.reduce(sensors, row, fn({:sensor, sensor, beacon}, row) ->
       block(sensor, beacon, y, row)
@@ -12,22 +11,7 @@ defmodule Day15 do
   def block({sx, sy}, {bx, by}, y, row) do
     dist = abs(sx - bx) +  abs(sy - by)
     diff = dist - abs(sy - y)
-    if(diff >= 0) do
-      if(y == by) do
-        cond do
-          sx < bx ->
-            Row.block(row, (sx-diff), (sx+diff-1))
-          sx > bx ->
-            Row.block(row, (sx-diff+1), (sx+diff))
-          sx == bx ->
-            row
-        end
-      else
-        Row.block(row, (sx-diff), (sx+diff))
-      end
-    else
-      row
-    end
+    Row.block(row, (sx-diff), (sx+diff))
   end
 
   def input() do
