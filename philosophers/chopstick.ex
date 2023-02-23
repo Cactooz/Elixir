@@ -3,6 +3,10 @@ defmodule Chopstick do
     stick = spawn_link(fn -> available() end)
   end
 
+  def quit({:stick, process}) do
+    send(process, :quit)
+  end
+
   def request(stick) do
     send(stick, {:request, self()})
     receive do
