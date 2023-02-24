@@ -23,28 +23,32 @@ defmodule Philosopher do
 
   def wait(hunger, strength, left, right, name, controller) do
     IO.puts("#{name} is waiting")
-    case Chopstick.request(left, 1000) do
+
+    ref = make_ref()
+    Chopstick.async(left, ref)
+    Chopstick.async(right, ref)
+    case Chopstick.get(ref, 1000) do
       :ok ->
-        IO.puts("#{name} received left chopstick")
+        IO.puts("#{name} received first chopstick")
         sleep(250)
-        case Chopstick.request(right, 1000) do
+        case Chopstick.get(ref, 1000) do
           :ok ->
-            IO.puts("#{name} received right chopstick")
-            eat(hunger, strength, left, right, name, controller)
+            IO.puts("#{name} received second chopstick")
+            eat(hunger, strength, left, right, name, controller, ref)
           :no ->
-            IO.puts("#{name} stopped waiting for right chopstick, strength of #{strength}")
-            Chopstick.return(left)
+            IO.puts("#{name} stopped waiting second chopstick, strength of #{strength}")
+            Chopstick.return(left, ref)
             dream(hunger, strength-1, left, right, name, controller)
         end
       :no ->
-        IO.puts("#{name} stopped waiting for left chopstick, strength of #{strength}")
+        IO.puts("#{name} stopped waiting first chopstick, strength of #{strength}")
         dream(hunger, strength-1, left, right, name, controller)
     end
   end
 
-  def eat(hunger, strength, left, right, name, controller) do
-    Chopstick.return(left)
-    Chopstick.return(right)
+  def eat(hunger, strength, left, right, name, controller, ref) do
+    Chopstick.return(left, ref)
+    Chopstick.return(right, ref)
     IO.puts("#{name} ate once")
     dream(hunger-1, strength, left, right, name, controller)
   end
