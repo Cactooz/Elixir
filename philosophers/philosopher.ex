@@ -1,6 +1,10 @@
 defmodule Philosopher do
   def start(hunger, left, right, name, controller) do
-    spawn_link(fn() -> dream(hunger, left, right, name, controller) end)
+    spawn_link(fn() -> init(hunger, left, right, name, controller) end)
+  end
+
+  defp init(hunger, left, right, name, controller) do
+    dream(hunger, left, right, name, controller)
   end
 
   def dream(0, left, right, name, controller) do
