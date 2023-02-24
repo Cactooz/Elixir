@@ -1,16 +1,16 @@
 defmodule Chopstick do
   def start() do
-    stick = spawn_link(fn -> available() end)
+    spawn_link(fn -> available() end)
   end
 
   def quit(stick) do
     send(stick, :quit)
   end
 
-  def request(stick) do
+  def request(stick, timeout) do
     send(stick, {:request, self()})
-    receive do
-      :granted -> :ok
+    receive do :granted -> :ok
+    after timeout -> :no
     end
   end
 
