@@ -28,6 +28,6 @@ defmodule Philosopher do
 
   def sleep(0) do :ok end
   def sleep(time) do
-    :timer.sleep(:random.uniform(time))
+    :timer.sleep(:rand.uniform(time))
   end
 end
