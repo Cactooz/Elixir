@@ -15,4 +15,9 @@ defmodule Moves do
       {Train.append(main, Train.take(two, -moves)), one, Train.drop(two, -moves)}
     end
   end
+
+  def sequence([], wagons) do wagons end
+  def sequence([move|moves], wagons) do
+    [wagons|sequence(moves, single(move, wagons))]
+  end
 end
