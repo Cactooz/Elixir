@@ -25,10 +25,13 @@ defmodule Shunt do
   end
 
   def rules([]) do [] end
-  def rules([{_, 0}|moves]) do rules(moves) end
-  def rules([_move1, _move2|moves]) do rules(moves) end
+  def rules([{track, moves}]) when n != 0 do [{track, move}] end
+  def rules([{_track, 0}|moves]) do rules(moves) end
   def rules([{track, move1}, {track, move2}|moves]) do
     rules([{track, move1+move2}|moves])
+  end
+  def rules([move1, move2|moves]) do
+    [move1|rules([move2|moves])]
   end
 
   def compress(moves) do
