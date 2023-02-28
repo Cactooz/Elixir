@@ -23,4 +23,20 @@ defmodule Shunt do
      {:two, -startLength} |
      few(Train.append(startWagons, endWagons), final)]
   end
+
+  def rules([]) do [] end
+  def rules([{_, 0}|moves]) do rules(moves) end
+  def rules([_move1, _move2|moves]) do rules(moves) end
+  def rules([{track, move1}, {track, move2}|moves]) do
+    rules([{track, move1+move2}|moves])
+  end
+
+  def compress(moves) do
+    compressed = rules(moves)
+    if rules(moves) == moves do
+      moves
+    else
+      compress(compressed)
+    end
+  end
 end
