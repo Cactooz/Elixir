@@ -41,4 +41,28 @@ defmodule Huffman do
     freq = List.keysort([node|freq], 1)
     huffman(freq)
   end
+
+  def encode_table(tree) do
+    left = elem(tree, 2)
+    right = elem(tree, 3)
+    table = Map.new()
+    table1 = encode_table(left, "0", table)
+    table2 = encode_table(right, "1", table)
+    Map.merge(table1, table2)
+  end
+  def encode_table({char, _value, nil, nil}, seq, table) do
+    Map.put(table, char, seq)
+  end
+  def encode_table({_char, _value, nil, right}, seq, table) do
+    encode_table(right, "#{seq}1", table)
+  end
+  def encode_table({_char, _value, left, nil}, seq, table) do
+    encode_table(left, "#{seq}0", table)
+  end
+  def encode_table({_char, _value, left, right}, seq, table) do
+    table1 = encode_table(left, "#{seq}0", table)
+    table2 = encode_table(right, "#{seq}1", table)
+    Map.merge(table1, table2)
+  end
+
 end
