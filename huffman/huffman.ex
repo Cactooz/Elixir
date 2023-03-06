@@ -65,4 +65,13 @@ defmodule Huffman do
     Map.merge(table1, table2)
   end
 
+  def encode([char], table) do
+    {:ok, encoding} = Map.fetch(table, char)
+    encoding
+  end
+  def encode([char|text], table) do
+    {:ok, encoding} = Map.fetch(table, char)
+    "#{encoding}#{encode(text, table)}"
+  end
+
 end
