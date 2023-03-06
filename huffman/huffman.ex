@@ -11,4 +11,21 @@ defmodule Huffman do
     'this is something that we should encode'
   end
 
+
+  def freq(sample) do
+    freq(sample, Map.new())
+  end
+
+  def freq([], freq) do
+    freq = Enum.map(freq, fn({char, value}) -> {char, value, nil, nil} end)
+    List.keysort(freq, 1)
+  end
+  def freq([char|rest], freq) do
+    case Map.get(freq, char) do
+      nil ->
+        freq(rest, Map.put(freq, char, 1))
+      value ->
+        freq(rest, Map.put(freq, char, value+1))
+    end
+  end
 end
