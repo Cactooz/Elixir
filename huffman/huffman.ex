@@ -11,6 +11,10 @@ defmodule Huffman do
     'this is something that we should encode'
   end
 
+  def tree(sample) do
+    freq = freq(sample)
+    huffman(freq)
+  end
 
   def freq(sample) do
     freq(sample, Map.new())
@@ -27,5 +31,14 @@ defmodule Huffman do
       value ->
         freq(rest, Map.put(freq, char, value+1))
     end
+  end
+
+  def huffman([freq]) do freq end
+  def huffman([first, second|freq]) do
+    {key1, freq1, _left1, _right1} = first
+    {key2, freq2, _left2, _right2} = second
+    node = {{key1, key2}, freq1+freq2, first, second}
+    freq = List.keysort([node|freq], 1)
+    huffman(freq)
   end
 end
