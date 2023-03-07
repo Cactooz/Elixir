@@ -76,10 +76,7 @@ defmodule Huffman do
     combine_list(table1, table2)
   end
 
-  def encode([char], table) do
-    {_key, code} = List.keyfind!(table, char, 0)
-    code
-  end
+  def encode([], _table) do [] end
   def encode([char|text], table) do
     codeList = encode(text, table)
     {_key, code} = List.keyfind!(table, char, 0)
