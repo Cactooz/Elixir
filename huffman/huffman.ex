@@ -55,30 +55,33 @@ defmodule Huffman do
   def encode_table(tree) do
     left = elem(tree, 2)
     right = elem(tree, 3)
-    table = Map.new()
-    table1 = encode_table(left, [0], table)
-    table2 = encode_table(right, [1], table)
-    Map.merge(table1, table2)
+    table1 = encode_table(left, [0])
+    table2 = encode_table(right, [1])
+    combine_list(table1, table2)
   end
-  def encode_table({char, _value, nil, nil}, seq, table) do
-    Map.put(table, char, Enum.reverse(seq))
+  def encode_table(nil, _) do nil end
+  def encode_table({char, _value, nil, nil}, seq) do
+    [{char, Enum.reverse(seq)}]
   end
-  def encode_table({_char, _value, nil, right}, seq, table) do
-    encode_table(right, [1|seq], table)
+  def encode_table({_char, _value, nil, right}, seq) do
+    encode_table(right, [1|seq])
   end
-  def encode_table({_char, _value, left, nil}, seq, table) do
-    encode_table(left, [0|seq], table)
+  def encode_table({_char, _value, left, nil}, seq) do
+    encode_table(left, [0|seq])
   end
-  def encode_table({_char, _value, left, right}, seq, table) do
-    table1 = encode_table(left, [0|seq], table)
-    table2 = encode_table(right, [1|seq], table)
-    Map.merge(table1, table2)
+  def encode_table({_char, _value, left, right}, seq) do
+    table1 = encode_table(left, [0|seq])
+    table2 = encode_table(right, [1|seq])
+    combine_list(table1, table2)
   end
 
   def encode([char], table) do
-    Map.get(table, char)
+    {_key, code} = List.keyfind!(table, char, 0)
+    code
   end
   def encode([char|text], table) do
-    combine_list(Map.get(table, char), encode(text, table))
+    codeList = encode(text, table)
+    {_key, code} = List.keyfind!(table, char, 0)
+    combine_list(code, codeList)
   end
 end
