@@ -70,17 +70,15 @@ defmodule Huffman do
     encode_table(left, [0|seq], table)
   end
   def encode_table({_char, _value, left, right}, seq, table) do
-    table1 = encode_table(left, "#{seq}0", table)
-    table2 = encode_table(right, "#{seq}1", table)
+    table1 = encode_table(left, [0|seq], table)
+    table2 = encode_table(right, [1|seq], table)
     Map.merge(table1, table2)
   end
 
   def encode([char], table) do
-    {:ok, encoding} = Map.fetch(table, char)
-    encoding
+    Map.get(table, char)
   end
   def encode([char|text], table) do
-    {:ok, encoding} = Map.fetch(table, char)
-    "#{encoding}#{encode(text, table)}"
+    combine_list(Map.get(table, char), encode(text, table))
   end
 end
