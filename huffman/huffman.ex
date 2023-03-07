@@ -85,4 +85,18 @@ defmodule Huffman do
     {_key, code} = List.keyfind!(table, char, 0)
     combine_list(code, codeList)
   end
+
+  def decode([], _table) do [] end
+  def decode(seq, table) do
+    {char, rest} = decode_table(seq, 1, table)
+    [char|decode(rest, table)]
+  end
+
+  def decode_table(seq, n, table) do
+    {code, rest} = Enum.split(seq, n)
+    case List.keyfind(table, code, 1) do
+      {key, _code} -> {key, rest}
+      nil -> decode_table(seq, n+1, table)
+    end
+  end
 end
