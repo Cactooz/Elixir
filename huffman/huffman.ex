@@ -22,6 +22,18 @@ defmodule Huffman do
     end
   end
 
+  def benchmark(file) do
+    input = read(file)
+    startTime = System.monotonic_time(:millisecond)
+    tree = tree(input)
+    table = encode_table(tree)
+    encoded = encode(input, table)
+    encodeTime = System.monotonic_time(:millisecond)
+    decode(encoded, table)
+    decodeTime = System.monotonic_time(:millisecond)
+    IO.puts("Total: #{decodeTime - startTime} - Encode: #{encodeTime - startTime} - Decode: #{decodeTime - encodeTime}")
+  end
+
   def combine_list(nil, list) do list end
   def combine_list(list, nil) do list end
   def combine_list([element], list) do
