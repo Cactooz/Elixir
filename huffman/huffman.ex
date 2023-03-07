@@ -11,6 +11,17 @@ defmodule Huffman do
     'this is something that we should encode'
   end
 
+  def read(file) do
+    {:ok, file} = File.open(file, [:read, :utf8])
+    binary = IO.read(file, :all)
+    File.close(file)
+
+    case :unicode.characters_to_list(binary, :utf8) do
+      {:incomplete, list, _} -> list
+      list -> list
+    end
+  end
+
   def combine_list(nil, list) do list end
   def combine_list(list, nil) do list end
   def combine_list([element], list) do
