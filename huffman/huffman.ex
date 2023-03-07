@@ -11,6 +11,16 @@ defmodule Huffman do
     'this is something that we should encode'
   end
 
+  def combine_list(nil, list) do list end
+  def combine_list(list, nil) do list end
+  def combine_list([element], list) do
+    [element|list]
+  end
+  def combine_list([element|list1], list2) do
+    list = combine_list(list1, list2)
+    [element|list]
+  end
+
   def tree(sample) do
     freq = freq(sample)
     huffman(freq)
@@ -46,18 +56,18 @@ defmodule Huffman do
     left = elem(tree, 2)
     right = elem(tree, 3)
     table = Map.new()
-    table1 = encode_table(left, "0", table)
-    table2 = encode_table(right, "1", table)
+    table1 = encode_table(left, [0], table)
+    table2 = encode_table(right, [1], table)
     Map.merge(table1, table2)
   end
   def encode_table({char, _value, nil, nil}, seq, table) do
-    Map.put(table, char, seq)
+    Map.put(table, char, Enum.reverse(seq))
   end
   def encode_table({_char, _value, nil, right}, seq, table) do
-    encode_table(right, "#{seq}1", table)
+    encode_table(right, [1|seq], table)
   end
   def encode_table({_char, _value, left, nil}, seq, table) do
-    encode_table(left, "#{seq}0", table)
+    encode_table(left, [0|seq], table)
   end
   def encode_table({_char, _value, left, right}, seq, table) do
     table1 = encode_table(left, "#{seq}0", table)
@@ -73,5 +83,4 @@ defmodule Huffman do
     {:ok, encoding} = Map.fetch(table, char)
     "#{encoding}#{encode(text, table)}"
   end
-
 end
