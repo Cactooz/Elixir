@@ -52,6 +52,7 @@ defmodule Huffman do
     huffman(freq)
   end
 
+  def encode_table({char, _freq, nil, nil}) do [{char, [0]}] end
   def encode_table(tree) do
     left = elem(tree, 2)
     right = elem(tree, 3)
