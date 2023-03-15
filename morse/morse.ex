@@ -47,36 +47,34 @@ defmodule Morse do
     left = elem(tree, 2)
     right = elem(tree, 3)
     codes = Map.new()
-    codesLeft = codes(left, '-', codes)
-    codesRight = codes(right, '.', codes)
-    Map.merge(codesLeft, codesRight)
+    codes = codes(left, '-', codes)
+    codes(right, '.', codes)
   end
-  def codes(nil, _) do nil end
+  def codes(nil, _, _codes) do nil end
   def codes({:node, char, nil, nil}, seq, codes) do
     Map.put(codes, char, seq)
   end
   def codes({:node, char, left, nil}, seq, codes) do
-    codesLeft = codes(left, '#{seq}-', codes)
-    case(char) do
-      :na -> codesLeft
-      _ -> Map.put(codesLeft, char, seq)
+    codes = case(char) do
+      :na -> codes
+      _ -> Map.put(codes, char, seq)
     end
+    codes(left, '#{seq}-', codes)
   end
   def codes({:node, char, nil, right}, seq, codes) do
-    codesRight = codes(right, '#{seq}.', codes)
-    case(char) do
-      :na -> codesRight
-      _ -> Map.put(codesRight, char, seq)
+    codes = case(char) do
+      :na -> codes
+      _ -> Map.put(codes, char, seq)
     end
+    codes(right, '#{seq}-', codes)
   end
   def codes({:node, char, left, right}, seq, codes) do
-    codesLeft = codes(left, '#{seq}-', codes)
-    codesRight = codes(right, '#{seq}.', codes)
-    codesTree = Map.merge(codesLeft, codesRight)
-    case(char) do
-      :na -> codesTree
-      _ -> Map.put(codesTree, char, seq)
+    codes = case(char) do
+      :na -> codes
+      _ -> Map.put(codes, char, seq)
     end
+    codes = codes(left, '#{seq}-', codes)
+    codes(right, '#{seq}.', codes)
   end
 
   def encode(text, codes) do
