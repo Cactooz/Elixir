@@ -56,35 +56,36 @@ defmodule Morse do
   def codes(tree) do
     left = elem(tree, 2)
     right = elem(tree, 3)
-    codesLeft = codes(left, '-')
-    codesRight = codes(right, '.')
-    List.keysort(combine_list(codesLeft, codesRight), 0)
+    codes = Map.new()
+    codesLeft = codes(left, '-', codes)
+    codesRight = codes(right, '.', codes)
+    Map.merge(codesLeft, codesRight)
   end
   def codes(nil, _) do nil end
-  def codes({:node, char, nil, nil}, seq) do
-    [{char, seq}]
+  def codes({:node, char, nil, nil}, seq, codes) do
+    Map.put(codes, char, seq)
   end
-  def codes({:node, char, left, nil}, seq) do
-    codesLeft = codes(left, '#{seq}-')
+  def codes({:node, char, left, nil}, seq, codes) do
+    codesLeft = codes(left, '#{seq}-', codes)
     case(char) do
       :na -> codesLeft
-      _ -> [{char, seq}|codesLeft]
+      _ -> Map.put(codesLeft, char, seq)
     end
   end
-  def codes({:node, char, nil, right}, seq) do
-    codesRight = codes(right, '#{seq}.')
+  def codes({:node, char, nil, right}, seq, codes) do
+    codesRight = codes(right, '#{seq}.', codes)
     case(char) do
       :na -> codesRight
-      _ -> [{char, seq}|codesRight]
+      _ -> Map.put(codesRight, char, seq)
     end
   end
-  def codes({:node, char, left, right}, seq) do
-    codesLeft = codes(left, '#{seq}-')
-    codesRight = codes(right, '#{seq}.')
-    codesTree = combine_list(codesLeft, codesRight)
+  def codes({:node, char, left, right}, seq, codes) do
+    codesLeft = codes(left, '#{seq}-', codes)
+    codesRight = codes(right, '#{seq}.', codes)
+    codesTree = Map.merge(codesLeft, codesRight)
     case(char) do
       :na -> codesTree
-      _ -> [{char, seq}|codesTree]
+      _ -> Map.put(codesTree, char, seq)
     end
   end
 
@@ -92,12 +93,10 @@ defmodule Morse do
     encode(text, codes, '')
   end
   def encode([char], codes, encoded) do
-    {_char, code} = List.keyfind!(codes, char, 0)
-    '#{encoded}#{code} '
+    '#{encoded}#{Map.get(codes, char)} '
   end
   def encode([char|text], codes, encoded) do
-    {_char, code} = List.keyfind!(codes, char, 0)
-    encode(text, codes, '#{encoded}#{code} ')
+    encode(text, codes, '#{encoded}#{Map.get(codes, char)} ')
   end
 
   def decode(text, codes) do
