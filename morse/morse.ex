@@ -49,4 +49,38 @@ defmodule Morse do
     [element|list]
   end
 
+  def codes(tree) do
+    left = elem(tree, 2)
+    right = elem(tree, 3)
+    codesLeft = codes(left, "-")
+    codesRight = codes(right, ".")
+    List.keysort(combine_list(codesLeft, codesRight), 0)
+  end
+  def codes(nil, _) do nil end
+  def codes({:node, char, nil, nil}, seq) do
+    [{char, seq}]
+  end
+  def codes({:node, char, left, nil}, seq) do
+    codesLeft = codes(left, seq <> "-")
+    case(char) do
+      :na -> codesLeft
+      _ -> [{char, seq}|codesLeft]
+    end
+  end
+  def codes({:node, char, nil, right}, seq) do
+    codesRight = codes(right, seq <> ".")
+    case(char) do
+      :na -> codesRight
+      _ -> [{char, seq}|codesRight]
+    end
+  end
+  def codes({:node, char, left, right}, seq) do
+    codesLeft = codes(left, seq <> "-")
+    codesRight = codes(right, seq <> ".")
+    codesTree = combine_list(codesLeft, codesRight)
+    case(char) do
+      :na -> codesTree
+      _ -> [{char, seq}|codesTree]
+    end
+  end
 end
