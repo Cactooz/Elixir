@@ -80,11 +80,12 @@ defmodule Morse do
   def encode(text, codes) do
     encode(text, codes, '')
   end
-  def encode([char], codes, encoded) do
-    '#{encoded}#{Map.get(codes, char)} '
+  def encode([], _codes, encoded) do
+    encoded = Enum.join(Enum.reverse([""|encoded]), " ")
+    String.to_charlist(encoded)
   end
   def encode([char|text], codes, encoded) do
-    encode(text, codes, '#{encoded}#{Map.get(codes, char)} ')
+    encode(text, codes, [Map.get(codes, char)|encoded])
   end
 
   def decode(text, codes) do
