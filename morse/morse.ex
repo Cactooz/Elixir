@@ -39,6 +39,10 @@ defmodule Morse do
             {:node, 104, {:node, 52, nil, nil}, {:node, 53, nil, nil}}}}}}
   end
 
+  def text() do
+    '.... - - .--. ... ---... .----- .----- .-- .-- .-- .-.-.- -.-- --- ..- - ..- -... . .-.-.- -.-. --- -- .----- .-- .- - -.-. .... ..--.. ...- .----. -.. .--.-- ..... .---- .-- ....- .-- ----. .--.-- ..... --... --. .--.-- ..... ---.. -.-. .--.-- ..... .---- '
+  end
+
   def combine_list(nil, list) do list end
   def combine_list(list, nil) do list end
   def combine_list([element], list) do
