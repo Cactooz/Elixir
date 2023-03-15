@@ -43,16 +43,6 @@ defmodule Morse do
     '.... - - .--. ... ---... .----- .----- .-- .-- .-- .-.-.- -.-- --- ..- - ..- -... . .-.-.- -.-. --- -- .----- .-- .- - -.-. .... ..--.. ...- .----. -.. .--.-- ..... .---- .-- ....- .-- ----. .--.-- ..... --... --. .--.-- ..... ---.. -.-. .--.-- ..... .---- '
   end
 
-  def combine_list(nil, list) do list end
-  def combine_list(list, nil) do list end
-  def combine_list([element], list) do
-    [element|list]
-  end
-  def combine_list([element|list1], list2) do
-    list = combine_list(list1, list2)
-    [element|list]
-  end
-
   def codes(tree) do
     left = elem(tree, 2)
     right = elem(tree, 3)
