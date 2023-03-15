@@ -83,4 +83,16 @@ defmodule Morse do
       _ -> [{char, seq}|codesTree]
     end
   end
+
+  def encode(text, codes) do
+    encode(text, codes, '')
+  end
+  def encode([char], codes, encoded) do
+    {_char, code} = List.keyfind!(codes, char, 0)
+    '#{encoded}#{code} '
+  end
+  def encode([char|text], codes, encoded) do
+    {_char, code} = List.keyfind!(codes, char, 0)
+    encode(text, codes, '#{encoded}#{code} ')
+  end
 end
