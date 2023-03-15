@@ -95,4 +95,16 @@ defmodule Morse do
     {_char, code} = List.keyfind!(codes, char, 0)
     encode(text, codes, '#{encoded}#{code} ')
   end
+
+  def decode(text, codes) do
+    decode(text, codes, codes, [])
+  end
+  def decode([], _codes, _root, decoded) do Enum.reverse(decoded) end
+  def decode([char|text], {:node, realChar, left, right}, root, decoded) do
+    case(char) do
+      ?- -> decode(text, left, root, decoded)
+      ?. -> decode(text, right, root, decoded)
+      32 -> decode(text, root, root, [realChar|decoded])
+    end
+  end
 end
